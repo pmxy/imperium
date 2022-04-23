@@ -31,6 +31,9 @@ autom4te.cache/**
 *~
 *.a
 
+### Generated files
+gSCodes
+impsec.h
 
 
 ### output programs
@@ -40,7 +43,7 @@ ConImp
 TelImp
 ImpCtrl
 ImpShut
-gSCodes
+
 
 
 
