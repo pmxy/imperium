@@ -1,0 +1,19 @@
+How to install Imperium:
+
+1)	Run the "configure" script. You may need to do "sh configure" to start
+	it up on your system.
+
+2)	Run "make" in this directory (the top level of the Imperium source
+	distribution).
+
+3)	If everything seems to build OK, run "make install". Note that you may
+	need to be root to do this, depending on where you are installing
+	Imperium.
+
+4)	If you have trouble installing Imperium on your machine, let me know.
+	I only have access to Ubuntu & Mac machines, so I can't test it much
+	beyond those environments...
+
+5)	Read the following files in the "Doc" subdirectory before creating any
+	worlds for other people to play:
+	hosting.doc, deity.doc, impcre.doc

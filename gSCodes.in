@@ -1,0 +1,65 @@
+#!/bin/sh
+#
+# gSCodes - will ask the user for three codes and then create the file
+# "impsec.h" in the current directory.
+#
+# If "impsec.h" exists, it will let the user know and then exit (without
+# damaging the existing file).
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 1, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+
+if test -f impsec.h
+then
+	echo "gSCodes: impsec.h already exists - doing nothing"
+	exit 0
+else
+	cat <<EOF
+Imperium uses "secret" codes (they are never displayed or entered) to
+prevent users from "spoofing" the Imperium server into doing things it
+would not normally allow them to do. The codes will be encrypted, if
+possible, and the server will look at the (possibly) encrypted codes and
+decide if the client is "known" before responding to it.
+
+For this to work I must create a file called "impsec.h" which will
+contain the codes that you wish to use. Note that only the first 8
+characters will be used for each code.
+
+EOF
+# It would be nice to do this as a function, but sh doesn't have them
+	ci_code=""
+	while test "$ci_code" = "";
+	do
+	    echo -n "Please enter a code for ConImp: "
+	    read ci_code
+	done
+	ic_code=""
+	while test "$ic_code" = "";
+	do
+	    echo -n "Please enter a code for ImpCtrl: "
+	    read ic_code
+	done
+	is_code=""
+	while test "$is_code" = "";
+	do
+	    echo -n "Please enter a code for ImpShut: "
+	    read is_code
+	done
+	echo "#define CON_IMP_CODE \"$ci_code\"" >impsec.h
+	echo "#define IMP_CTRL_CODE \"$ic_code\"" >>impsec.h
+	echo "#define IMP_SHUT_CODE \"$is_code\"" >>impsec.h
+	chmod 600 impsec.h
+	exit 0
+fi
