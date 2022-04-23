@@ -1,0 +1,47 @@
+#### Imperium text game, iported from imperium-20150912.zip
+### file : .gitignore
+### creation : pmx-2022.04.23
+
+### autotools generated files 
+INSTALL
+Makefile
+Makefile.in
+aclocal.m4
+compile
+config.guess
+config.h
+config.h.in
+config.log
+config.status
+config.sub
+configure
+depcomp
+install-sh
+missing
+.dirstamp
+stamp-h1
+
+### autotools generated dirs 
+autom4te.cache/**
+**/.deps
+**/.dirstamp
+
+### extra files
+*.o
+*~
+*.a
+
+
+
+### output programs
+ImpServ
+ImpCre
+ConImp
+TelImp
+ImpCtrl
+ImpShut
+
+
+
+
+
