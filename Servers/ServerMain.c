@@ -69,7 +69,6 @@ BOGUS - Imperium not supported on this machine due to missing unistd.h
 #include <sys/time.h>
 #include <sys/errno.h>
 #include <setjmp.h>
-#include <bits/signum.h>
 #include <signal.h>
 #ifdef HAVE_STRING_H
 #include <string.h>
