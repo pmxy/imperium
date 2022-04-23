@@ -1,10 +1,21 @@
 # makefile for Imperium
 
-IMP_DEST=/usr/local/lib/imperium
-IMP_OWN=impown
-IMP_GRP=games
+### Modified (pmx-2022.04.23)
+### Use the next line to force a specific Imperium install dir
+#IMP_DEST=/usr/local/lib/imperium
+### Or use the next line to use the configure --prefix=... directory
+IMP_DEST=$(prefix)/imperium
+
+### Original user/group
+#IMP_OWN=impown
+#IMP_GRP=games
+
+### My private user/group for local tests (pmx-2022.04.23) 
+IMP_OWN=pmx
+IMP_GRP=pmx
+
 IMP_BR=1.5
 #libdebug=
 libdebug=-DDEBUG_LIB
-servdebug=
-#servdebug=-DDEBUG_SERV
+#servdebug=
+servdebug=-DDEBUG_SERV
