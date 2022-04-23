@@ -719,7 +719,12 @@ void runImperium(void)
 
 void splatZombie(void)
 {
+#if __USE_BSD
 	union wait wstatus;
+#else
+    int * wstatus;
+#endif
+
 	while(wait3(&wstatus, WNOHANG, NULL) > 0)
 	{
 	}
