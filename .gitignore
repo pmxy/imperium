@@ -3,20 +3,16 @@
 ### creation : pmx-2022.04.23
 
 ### autotools generated files 
-INSTALL
 Makefile
-Makefile.in
-aclocal.m4
+**/Makefile
 compile
 config.guess
 config.h
-config.h.in
 config.log
 config.status
 config.sub
-configure
+configure.cache
 depcomp
-install-sh
 missing
 .dirstamp
 stamp-h1
