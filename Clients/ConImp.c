@@ -298,27 +298,27 @@ void serverRequest(void)
     rt = rq->rq_type;
     if (write(ImperiumPort, (char *)rq, sizeof(Request_t)) < 0)
     {
-	puts("*** serverRequest: write() failed! ***\n");
+	    puts("*** serverRequest: write() failed! ***\n");
         serverAbort();
     }
     FD_ZERO(&readPipe);
     FD_SET(myPort, &readPipe);
     if (select(myPort+1, &readPipe, 0, 0, 0) <= 0)
     {
-	perror("serverRequest: select");
-	serverAbort();
+	    perror("serverRequest: select");
+	    serverAbort();
     }
     if (FD_ISSET(myPort, &readPipe))
     {
-	if (read(myPort, (char *)rq, sizeof(Request_t)) != sizeof(Request_t))
-	{
-	    puts("*** serverRequest: read() failed! ***\n");
+	    if (read(myPort, (char *)rq, sizeof(Request_t)) != sizeof(Request_t))
+	    {
+	        puts("*** serverRequest: read() failed! ***\n");
             serverAbort();
-	}
+	    }
         if (rq->rq_type != rt)
         {
             printf("*** serverRequest: got type %d back instead of %d ***\n",
-		rq->rq_type - rt_nop, rt - rt_nop);
+		    rq->rq_type - rt_nop, rt - rt_nop);
             serverAbort();
         }
     }
@@ -626,8 +626,8 @@ void userLog(void)
 
     if (!LoggingAllowed)
     {
-	ISt->is_argBool = FALSE;
-	return;
+	    ISt->is_argBool = FALSE;
+	    return;
     }
     fileName = (char *)ISt->is_argLong;
     if (LogFd != NULL)
@@ -667,15 +667,15 @@ BOOL runImperium(void)
     /* First we attempt to come up with the port name to use */
     if (DoDebug)
     {
-	sprintf(fileDir, "%s/server/%s", FIFO_DIR, IMP_TEST_PORT);
+	    sprintf(fileDir, "%s/server/%s", FIFO_DIR, IMP_TEST_PORT);
     }
     else if (PlayPort[0] != '\0')
     {
-	sprintf(fileDir, "%s/server/%s", FIFO_DIR, &PlayPort[0]);
+	    sprintf(fileDir, "%s/server/%s", FIFO_DIR, &PlayPort[0]);
     }
     else
     {
-	sprintf(fileDir, "%s/server/%s", FIFO_DIR, IMPERIUM_PORT);
+	    sprintf(fileDir, "%s/server/%s", FIFO_DIR, IMPERIUM_PORT);
     }
     /* Try to open the port */
     ImperiumPort = open(fileDir, O_WRONLY | O_NDELAY, 0);
@@ -711,65 +711,65 @@ BOOL runImperium(void)
 	    else
 	    {
 		    strcpy(UsePort, tmpNam);
-                    IS = ISt;
-                    ISt->is_serverRequest = serverRequest;
-                    ISt->is_writeUser = writeUser;
-                    ISt->is_readUser = readUser;
-                    ISt->is_timedReadUser = timedReadUser;
-                    ISt->is_echoOff = echoOff;
-                    ISt->is_echoOn = echoOn;
-                    ISt->is_gotControlC = gotControlC;
-                    ISt->is_sleep = locSleep;
-                    ISt->is_log = userLog;
-                    ISt->is_extEdit = doExtEdit;
-                    LogFd = NULL;
+            IS = ISt;
+            ISt->is_serverRequest = serverRequest;
+            ISt->is_writeUser = writeUser;
+            ISt->is_readUser = readUser;
+            ISt->is_timedReadUser = timedReadUser;
+            ISt->is_echoOff = echoOff;
+            ISt->is_echoOn = echoOn;
+            ISt->is_gotControlC = gotControlC;
+            ISt->is_sleep = locSleep;
+            ISt->is_log = userLog;
+            ISt->is_extEdit = doExtEdit;
+            LogFd = NULL;
 
-                    ISt->is_request.rq_type = rt_startClient;
-                    strcpy(&ISt->is_request.rq_text[0], tmpNam);
-                    /* Fill in the correct security code */
+            ISt->is_request.rq_type = rt_startClient;
+            strcpy(&ISt->is_request.rq_text[0], tmpNam);
+            /* Fill in the correct security code */
 #ifdef HAVE_CRYPT
-                    sprintf(&locSalt[0], "%2.2x", getpid() % 64);
-                    sprintf(&ISt->is_request.rq_private[2], "%-.15s",
-                        crypt(CON_IMP_CODE, &locSalt[0]));
+            sprintf(&locSalt[0], "%2.2x", getpid() % 64);
+            sprintf(&ISt->is_request.rq_private[2], "%-.15s",
+                    crypt(CON_IMP_CODE, &locSalt[0]));
 #else /* !HAVE_CRYPT */
-                    strcpy(&ISt->is_request.rq_private[2], CON_IMP_CODE);
+            strcpy(&ISt->is_request.rq_private[2], CON_IMP_CODE);
 #endif
-                    serverRequest();
-                    /* Check to see if we were recognized */
-                    if (ISt->is_request.rq_private[2] == '\0')
-                    {
-                        /* Nope! */
-                        puts("*** outdated/invalid identity code");
-                    }
-                    else
-                    {
-                        /* Yup! */
-                        strcpy(&ISt->is_request.rq_private[2], "Local client ");
-                        strcat(&ISt->is_request.rq_private[2], REVISION);
-                        strcat(&ISt->is_request.rq_private[2], " started.");
-                        ISt->is_request.rq_type = rt_log;
-                        serverRequest();
+            serverRequest();
+            /* Check to see if we were recognized */
+            if (ISt->is_request.rq_private[2] == '\0')
+            {
+                /* Nope! */
+                puts("*** outdated/invalid identity code");
+            }
+            else
+            {
+                /* Yup! */
+                strcpy(&ISt->is_request.rq_private[2], "Local client ");
+                strcat(&ISt->is_request.rq_private[2], REVISION);
+                strcat(&ISt->is_request.rq_private[2], " started.");
+                ISt->is_request.rq_type = rt_log;
+                serverRequest();
 
-                        /* clear out buffer and set up no outside time limit */
-                        memset(&ISt->is_textIn[0], '\0', INPUT_BUFFER_SIZE *
-                            sizeof(char));
-                        strcpy(&ISt->is_textIn[0], &nameBuff[0]);
-                        ISt->is_argShort = passedTime;
+                /* clear out buffer and set up no outside time limit */
+                memset(&ISt->is_textIn[0], '\0', INPUT_BUFFER_SIZE *
+                    sizeof(char));
+                strcpy(&ISt->is_textIn[0], &nameBuff[0]);
+                ISt->is_argShort = passedTime;
 
-                        Imperium(ISt);
+                Imperium(ISt);
 
-                        if (LogFd)
-                        {
-                            logFlush();
-                            fclose(LogFd);
-                        }
-                        strcpy(&ISt->is_request.rq_private[2], "Local client ");
-                        strcat(&ISt->is_request.rq_private[2], REVISION);
-                        strcat(&ISt->is_request.rq_private[2], " terminated.");
-                        ISt->is_request.rq_type = rt_log;
-                        serverRequest();
-                        ISt->is_request.rq_type = rt_stopClient;
-                        serverRequest();
+                if (LogFd)
+                {
+                    logFlush();
+                    fclose(LogFd);
+                }
+                strcpy(&ISt->is_request.rq_private[2], "Local client ");
+                strcat(&ISt->is_request.rq_private[2], REVISION);
+                strcat(&ISt->is_request.rq_private[2], " terminated.");
+                ISt->is_request.rq_type = rt_log;
+                serverRequest();
+                ISt->is_request.rq_type = rt_stopClient;
+                serverRequest();
 		    }
 
                     ImpFree(ISt);
@@ -992,7 +992,7 @@ int main(int argc, char *argv[])
         }
         if (!hadError)
         {
-	    signal(SIGINT, breakHandler);
+	        signal(SIGINT, breakHandler);
             (void) runImperium();
         }
     cleanup(0);
