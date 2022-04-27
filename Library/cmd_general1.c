@@ -1057,7 +1057,7 @@ BOOL cmd_divvy(IMP)
     register Planet_t *rpl;
     register USHORT curPer;
     register USHORT oldAmt;
-    unsigned long plNum;
+    ULONG plNum;
     short oldEff;
     Planet_t savePl;
     PProd_t prod;
@@ -1072,16 +1072,8 @@ BOOL cmd_divvy(IMP)
         (void) skipBlanks(IS);
         /* read the planet in */
         server(IS, rt_readPlanet, plNum);
-
-//IS->is_world.w_race[IS->is_player.p_race].r_homePlanet
-fprintf(stderr,"divvy : Planet=%lu Owner=%lu %s, IS->is_player.p_number=%lu, home planet=%lu\n", plNum, IS->is_player.p_number, IS->is_player.p_name, rpl->pl_owner, IS->is_world.w_race[IS->is_player.p_race].r_homePlanet);
-
         /* make sure the player owns the planet */
-/* HACK : home planet owner is apprently set to 255 ??? 
- * Needs to investigate - pmx-2022-04-27.
-*/
-//        if (rpl->pl_owner != IS->is_player.p_number)
-        if ((rpl->pl_owner != IS->is_player.p_number) && (rpl->pl_owner != 255))
+        if (rpl->pl_owner != IS->is_player.p_number)
         {
             user(IS, "You don't own that planet\n");
         }
