@@ -4,7 +4,7 @@
 ### Use the next line to force a specific Imperium install dir
 #IMP_DEST=/usr/local/lib/imperium
 ### Or use the next line to use the configure --prefix=... directory
-IMP_DEST=$(prefix)/imperium
+IMP_DEST=$(PREFIX)/lib/imperium
 
 ### Original user/group
 #IMP_OWN=impown

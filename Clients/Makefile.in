@@ -1,4 +1,7 @@
+# Pull in common defs
+PREFIX=@prefix@
 include ../MakeLoc
+
 IMP_BIN_DEST = @bindir@
 
 # Cflags Options:

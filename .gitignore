@@ -11,7 +11,7 @@ config.h
 config.log
 config.status
 config.sub
-configure.cache
+config.cache
 depcomp
 missing
 .dirstamp

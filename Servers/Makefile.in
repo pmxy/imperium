@@ -1,4 +1,8 @@
 # makefile for Imperium servers
+
+
+# Pull in common defs
+PREFIX=@prefix@
 include ../MakeLoc
 
 CC = @CC@
