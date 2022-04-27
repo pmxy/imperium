@@ -91,7 +91,7 @@ BOGUS - TelImp not supported on this machine due to missing select() call!
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <stdio.h>
-#include <sys/time.h>
+#include <time.h>
 #include <sys/errno.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
@@ -402,10 +402,11 @@ void timedInput(unsigned int blTime, unsigned int maxTime)
 	    {
 		/* Why is EFAULT returned?? */
 		/* And ECHILD too? */
-	        if ((errno != EINTR) && (errno != ENOENT) && (errno != EFAULT) && (errno != ECHILD) && (errno != 22) && (errno != 9))
+        /* AND WHY ERROR 25 ??? linux MINT/Ubuntu 30.04 - pmx-2022.04.28 */
+	        if ((errno != EINTR) && (errno != ENOENT) && (errno != EFAULT) && (errno != ECHILD) && (errno != 22) && (errno != 25) && (errno != 9))
 	        {
 		    /* Got a booboo */
-		    printf("timedInput() got bad val from select() %d\n", errno);
+		    printf("timedInput() got bad val from select() %d %s\n", errno, strerror(errno));
 		    IS->is_argBool = FALSE;
 		    return;
 	        }
