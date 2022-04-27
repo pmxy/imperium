@@ -474,10 +474,10 @@ int main(int argc, char *argv[])
 	    }
 	    else
 	    {
-		userNamePtr = cuserid(NULL);
+		userNamePtr = cuserid(userName);
 		if (userNamePtr != NULL)
 		{
-		    strncpy(userName, userNamePtr, 28 * sizeof(char));
+//		    strncpy(userName, userNamePtr, 28 * sizeof(char));
 		    strcat(userName, " ");
 		}
 		else
