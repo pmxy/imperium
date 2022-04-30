@@ -37,6 +37,8 @@
 
 #include "../config.h"
 
+#include <ctype.h>
+
 #ifdef HAVE_STRING_H
 #include <string.h>
 #else
@@ -414,50 +416,61 @@ BOOL parseConditions(IMP, register ConditionSet_t *cs, ConditionType_t type)
     register char ch;
     BOOL hadError;
 
-    ch = *IS->is_textInPos;
-    if (ch == '/')
-    {
-        /* special case, allow '/x' to mean '?des=x' */
-        IS->is_textInPos += sizeof(char);
-        cs->cs_conditionCount = 0;
-        cs->cs_condition[0].c_left = U_CLASS;
-        cs->cs_condition[0].c_operator = '=';
-        if (getValue(IS, cs, TRUE, type))
-        {
-            if (cs->cs_condition[0].c_right < 0)
-            {
-                err(IS, "must use designation letter with '/'");
-                return FALSE;
-            }
-            cs->cs_conditionCount = 1;
-            return TRUE;
-        }
-        return FALSE;
-    }
-    cs->cs_conditionCount = 0;
-    if (ch == '?')
-    {
-        IS->is_textInPos += sizeof(char);
-        hadError = FALSE;
-        while (!hadError)
-        {
+
+    cs->cs_conditionCount = 0;       
+    hadError = FALSE;
+
+    while (!hadError) {
+
+        ch = *IS->is_textInPos;
+        while (isblank(ch)) {
+            IS->is_textInPos += sizeof(char);
             ch = *IS->is_textInPos;
-            if ((ch == '\0') || (ch == ' ') || (ch == '\t'))
+        } 
+
+        if (ch=='\0') return TRUE;
+
+
+        if (ch == '/') {
+        /* special case, allow '/x' to mean '?class=x' */
+            IS->is_textInPos += sizeof(char);
+            cs->cs_condition[cs->cs_conditionCount].c_left = U_CLASS;
+            cs->cs_condition[cs->cs_conditionCount].c_operator = '=';
+            if (getValue(IS, cs, TRUE, type))
             {
+                if (cs->cs_condition[cs->cs_conditionCount].c_right < 0)
+                {
+                    err(IS, "must use class ID with '/'");
+                    return FALSE;
+                }
+                IS->is_textInPos += sizeof(char);
+                cs->cs_conditionCount++;
+                continue;
+            }
+            return FALSE;
+       }
+
+
+        if (ch == '?') {
+            IS->is_textInPos += sizeof(char);
+            ch = *IS->is_textInPos;
+            while (isblank(ch)) {
+                IS->is_textInPos += sizeof(char);
+                ch = *IS->is_textInPos;
+            } 
+
+            if ((ch == '\0')) {
                 /* no more conditions */
                 return (!hadError);
             }
-            if (cs->cs_conditionCount == MAX_CONDITIONS)
-            {
+
+            if (cs->cs_conditionCount == MAX_CONDITIONS) {
                 err(IS, "too many conditions");
                 hadError = TRUE;
-            }
-            else
-            {
+            } else {
                 if (getValue(IS, cs, FALSE, type) &&
                     getOperator(IS, cs) &&
-                    getValue(IS, cs, TRUE, type))
-                {
+                    getValue(IS, cs, TRUE, type)) {
                     if (((cs->cs_condition[cs->cs_conditionCount].c_left
                         == U_CLASS) &&
                         (cs->cs_condition[cs->cs_conditionCount].c_right
@@ -465,22 +478,16 @@ BOOL parseConditions(IMP, register ConditionSet_t *cs, ConditionType_t type)
                         ((cs->cs_condition[cs->cs_conditionCount].c_right
                         == U_CLASS) &&
                         (cs->cs_condition[cs->cs_conditionCount].c_left
-                        < 0)))
-                    {
+                        < 0))) {
                         err(IS, "invalid use of designation character");
                         hadError = TRUE;
-                    }
-                    else
-                    {
+                    } else {
                         if ((cs->cs_condition[cs->cs_conditionCount].c_left>= 0)
                             && (cs->cs_condition[cs->cs_conditionCount].c_right
-                             >= 0))
-                        {
+                             >= 0)) {
                             err(IS, "invalid condition - no field");
                             hadError = TRUE;
-                        }
-                        else
-                        {
+                        } else {
                             if ((type == ct_sector) &&
                                 (((cs->cs_condition[cs->cs_conditionCount].c_left
                                 != U_CLASS) &&
@@ -488,24 +495,24 @@ BOOL parseConditions(IMP, register ConditionSet_t *cs, ConditionType_t type)
                                 != U_PLANET_COUNT) &&
                                 (cs->cs_condition[cs->cs_conditionCount].c_left
                                 != U_SHIP_COUNT)) || (IS->is_player.p_status !=
-                                ps_deity)))
-                            {
+                                ps_deity))) {
                                 err(IS, "invalid condition for a sector");
                                 hadError = TRUE;
-                            }
-                            else
-                            {
+                            } else {
                                 cs->cs_conditionCount++;
                                 ch = *IS->is_textInPos;
-                                if (ch == '&')
-                                {
+                                while (isblank(ch)) {
                                     IS->is_textInPos += sizeof(char);
-                                }
-                                else
-                                {
-                                    if ((ch != '\0') && (ch != ' ') &&
-                                        (ch != '\t'))
-                                    {
+                                    ch = *IS->is_textInPos;
+                                } 
+                                if (ch == '&') {
+                                    do {
+                                        IS->is_textInPos += sizeof(char);
+                                        ch = *IS->is_textInPos;
+                                    } while (isblank(ch));
+                                    continue;
+                                } else {
+                                    if ((ch != '\0')) {
                                         err(IS, "syntax error in conditions");
                                         hadError = TRUE;
                                     }
@@ -513,9 +520,7 @@ BOOL parseConditions(IMP, register ConditionSet_t *cs, ConditionType_t type)
                             }
                         }
                     }
-                }
-                else
-                {
+                } else {
                     hadError = TRUE;
                 }
             }
@@ -850,8 +855,8 @@ long getShipCondVal(IMP, register ShipScan_t *shs, long valu)
     }
     switch (valu)
     {
-        case U_CIVILIANS:
-            return (long)shs->shs_currentShip.sh_items[it_civilians];
+        case U_CLASS:
+            return (long)shs->shs_currentShip.sh_type;
         case U_SCIENTISTS:
             return (long)shs->shs_currentShip.sh_items[it_scientists];
         case U_MILITARY:
