@@ -450,6 +450,10 @@ BOOL parseConditions(IMP, register ConditionSet_t *cs, ConditionType_t type)
             return FALSE;
        }
 
+        if (ch == '&') {
+            IS->is_textInPos += sizeof(char);
+            continue;
+        }
 
         if (ch == '?') {
             IS->is_textInPos += sizeof(char);
@@ -500,23 +504,7 @@ BOOL parseConditions(IMP, register ConditionSet_t *cs, ConditionType_t type)
                                 hadError = TRUE;
                             } else {
                                 cs->cs_conditionCount++;
-                                ch = *IS->is_textInPos;
-                                while (isblank(ch)) {
-                                    IS->is_textInPos += sizeof(char);
-                                    ch = *IS->is_textInPos;
-                                } 
-                                if (ch == '&') {
-                                    do {
-                                        IS->is_textInPos += sizeof(char);
-                                        ch = *IS->is_textInPos;
-                                    } while (isblank(ch));
-                                    continue;
-                                } else {
-                                    if ((ch != '\0')) {
-                                        err(IS, "syntax error in conditions");
-                                        hadError = TRUE;
-                                    }
-                                }
+                                continue;
                             }
                         }
                     }
